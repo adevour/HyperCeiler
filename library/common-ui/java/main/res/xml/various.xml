@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ This file is part of HyperCeiler.
+  ~
+  ~ HyperCeiler is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU Affero General Public License as
+  ~ published by the Free Software Foundation, either version 3 of the
+  ~ License.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU Affero General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  ~
+  ~ Copyright (C) 2023-2025 HyperCeiler Contributions
+  -->
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:myLocation="@string/various">
+    <PreferenceCategory>
+        <Preference
+            android:enabled="false"
+            android:title="@string/various_location_simulation_title"
+            app:isPreferenceVisible="false" />
+
+        <Preference
+            android:fragment="com.sevtinge.hyperceiler.main.page.main.hooker.various.AlertDialogSettings"
+            android:key="prefs_key_various_dialog"
+            android:title="@string/various_dialog_title"
+            app:isPreferenceVisible="true" />
+
+        <Preference
+            android:fragment="com.sevtinge.hyperceiler.main.page.main.hooker.various.AOSPSettings"
+            android:key="prefs_key_various_open_aosp_something"
+            android:summary="@string/various_open_aosp_something_desc"
+            android:title="@string/various_open_aosp_something_title" />
+
+        <Preference
+            android:fragment="com.sevtinge.hyperceiler.main.page.main.hooker.various.MiPadSettings"
+            android:key="prefs_key_various_mipad"
+            android:title="@string/various_mipad_title"
+            app:isPreferenceVisible="true" />
+
+        <fan.preference.DropDownPreference
+            android:defaultValue="0"
+            android:key="prefs_key_various_super_clipboard_e"
+            android:summary="@string/various_super_clipboard_summary"
+            android:title="@string/various_unlock_super_clipboard"
+            app:entries="@array/super_clipboard"
+            app:entryValues="@array/super_clipboard_value" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:key="prefs_key_various_super_clipboard_key"
+        android:title="@string/various_super_clipboard_title">
+        <fan.preference.DropDownPreference
+            android:defaultValue="0"
+            android:key="prefs_key_various_super_clipboard_gallery_int"
+            android:summary="@string/various_super_clipboard_picture_desc"
+            android:title="@string/gallery"
+            app:entries="@array/super_clipboard_switch"
+            app:entryValues="@array/super_clipboard_switch_value" />
+
+        <fan.preference.DropDownPreference
+            android:defaultValue="0"
+            android:key="prefs_key_various_super_clipboard_screenshot_int"
+            android:summary="@string/various_super_clipboard_picture_desc"
+            android:title="@string/screenshot"
+            app:entries="@array/super_clipboard_switch"
+            app:entryValues="@array/super_clipboard_switch_value" />
+
+        <fan.preference.DropDownPreference
+            android:defaultValue="0"
+            android:key="prefs_key_various_super_clipboard_fileexplorer_int"
+            android:summary="@string/various_super_clipboard_files_desc"
+            android:title="@string/fileexplorer"
+            app:entries="@array/super_clipboard_switch"
+            app:entryValues="@array/super_clipboard_switch_value" />
+
+        <fan.preference.DropDownPreference
+            android:defaultValue="0"
+            android:key="prefs_key_various_super_clipboard_browser_int"
+            android:summary="@string/various_super_clipboard_files_desc"
+            android:title="@string/browser"
+            app:entries="@array/super_clipboard_switch"
+            app:entryValues="@array/super_clipboard_switch_value" />
+
+        <fan.preference.DropDownPreference
+            android:defaultValue="0"
+            android:key="prefs_key_various_super_clipboard_notes_int"
+            android:summary="@string/various_super_clipboard_picture_share_desc"
+            android:title="@string/notes"
+            app:entries="@array/super_clipboard_switch"
+            app:entryValues="@array/super_clipboard_switch_value" />
+
+        <fan.preference.DropDownPreference
+            android:defaultValue="0"
+            android:key="prefs_key_various_super_clipboard_creation_int"
+            android:summary="@string/various_super_clipboard_picture_share_desc"
+            android:title="@string/creation"
+            app:entries="@array/super_clipboard_switch"
+            app:entryValues="@array/super_clipboard_switch_value" />
+
+        <fan.preference.DropDownPreference
+            android:defaultValue="0"
+            android:key="prefs_key_various_super_clipboard_mms_int"
+            android:title="@string/mms"
+            app:entries="@array/super_clipboard_switch"
+            app:entryValues="@array/super_clipboard_switch_value" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/various">
+        <!--        <SwitchPreference-->
+        <!--            android:defaultValue="false"-->
+        <!--            android:key="prefs_key_various_nobrightness"-->
+        <!--            android:title="@string/various_nobrightness" />-->
+
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="prefs_key_various_no_overscroll"
+            android:title="@string/various_no_overscroll" />
+
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="prefs_key_sogou_xiaomi_clipboard"
+            android:title="@string/sogou_xiaomi_clipboard" />
+
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="prefs_key_various_phrase_clipboardlist"
+            android:summary="@string/various_phrase_clipboardlist_more"
+            android:title="@string/various_phrase_clipboardlist" />
+
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="prefs_key_add_clipboard_clear"
+            android:summary="@string/various_phrase_clipboardlist_more"
+            android:title="@string/add_clipboard_clear" />
+
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="prefs_key_various_unlock_ime"
+            android:summary="@string/various_unlock_ime_desc"
+            android:title="@string/various_unlock_ime" />
+
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="prefs_key_various_disable_folder_cantuse"
+            android:title="@string/various_disable_folder_cantuse" />
+
+        <fan.preference.DropDownPreference
+            android:defaultValue="0"
+            android:key="prefs_key_various_collapse_miui_title"
+            android:summary="@string/various_collapse_miui_title_desc"
+            android:title="@string/various_collapse_miui_title"
+            app:entries="@array/collapse_miui_title"
+            app:entryValues="@array/collapse_miui_title_value" />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

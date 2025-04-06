@@ -2,43 +2,42 @@ plugins {
     alias(libs.plugins.android.library)
 }
 
+val srcDir = arrayOf (
+    "safemode",
+    "dashboard",
+    "provision"
+)
+
 android {
     namespace = "com.sevtinge.hyperceiler.ui"
     compileSdk = 36
 
     defaultConfig {
         minSdk = 34
+
+        buildConfigField("String", "APP_MODULE_ID", "\"com.sevtinge.hyperceiler\"")
     }
 
-    buildTypes {
-        release {
-            isMinifyEnabled = false
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
+    buildFeatures {
+        buildConfig = true
+    }
+
+    sourceSets {
+        getByName("main") {
+            //java.srcDir("java")
+            java.srcDirs("java/main/src")
+            res.srcDirs("java/main/res")
+            manifest.srcFile("java/AndroidManifest.xml")
+
+            srcDir.forEach {
+                java.srcDirs("java/$it/src")
+                res.srcDirs("java/$it/res")
+            }
         }
-        create("beta") {
-            isMinifyEnabled = false
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
-        }
-        create("canary") {
-            isMinifyEnabled = false
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
-        }
-        debug {
-            isMinifyEnabled = false
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
-        }
+    }
+
+    buildTypes.all {
+        consumerProguardFiles(libs.versions.proguard.rules.get())
     }
 }
 
