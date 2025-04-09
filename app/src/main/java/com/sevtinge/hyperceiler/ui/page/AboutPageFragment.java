@@ -28,7 +28,6 @@ import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -44,12 +43,14 @@ import com.sevtinge.hyperceiler.ui.R;
 import com.sevtinge.hyperceiler.expansion.utils.ClickCountsUtils;
 import com.sevtinge.hyperceiler.ui.page.about.view.BgEffectPainter;
 import com.sevtinge.hyperceiler.ui.page.about.widget.VersionCard;
-import com.sevtinge.hyperceiler.common.utils.ActionBarUtils;
+import com.sevtinge.hyperceiler.widget.ListContainerView;
+import com.sevtinge.hyperceiler.widget.VersionCardClickView;
 
 import java.util.Objects;
 
 import fan.appcompat.app.ActionBar;
 import fan.appcompat.app.Fragment;
+import fan.appcompat.internal.app.widget.ActionBarImpl;
 import fan.core.widget.NestedScrollView;
 import fan.navigator.NavigatorFragmentListener;
 import fan.springback.view.SpringBackLayout;
@@ -61,10 +62,8 @@ public class AboutPageFragment extends DashboardFragment
     private final int lIIlIlI = 100 >>> 6;
 
     private int scrollValue = 0;
-    private boolean isFirst = true;
 
-    private View mRootView;
-    private View scrollLayout;
+    private ListContainerView mContainerView;
     private NestedScrollView mScrollView;
     private SpringBackLayout mSpringBackView;
 
@@ -80,7 +79,6 @@ public class AboutPageFragment extends DashboardFragment
     private BgEffectPainter mBgEffectPainter;
     private float startTime = (float) System.nanoTime();
     private final Handler mHandler = new Handler(Looper.getMainLooper());
-    private FrameLayout contentView;
     Runnable runnableBgEffect = new Runnable() {
         @Override
         public void run() {
@@ -92,18 +90,18 @@ public class AboutPageFragment extends DashboardFragment
         }
     };
 
+    @Override
+    public int getThemeRes() {
+        return R.style.Theme_Navigator_ContentChild_About;
+    }
+
     @NonNull
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        if (container != null) {
-            //updateFragmentView(container);
-        }
-        if (mRootView == null) {
-            mRootView = inflater.inflate(R.layout.fragment_about_page, container, false);
-            ViewGroup prefsContainer = mRootView.findViewById(R.id.prefs_container);
-            View view = super.onCreateView(inflater, container, savedInstanceState);
+        if (mContainerView == null) {
+            mContainerView = new ListContainerView(requireContext());
+            mContainerView.addPrefsContainer(super.onCreateView(inflater, container, savedInstanceState));
             setOverlayMode();
-            prefsContainer.addView(view);
 
             RecyclerView listView = getListView();
             View parent = (View) listView.getParent();
@@ -112,18 +110,20 @@ public class AboutPageFragment extends DashboardFragment
                 listView.setPaddingRelative(listView.getPaddingStart(), 0, listView.getPaddingEnd(), 0);
             }
 
-            scrollLayout = mRootView.findViewById(R.id.scroll_layout);
-            mVersionCardView = mRootView.findViewById(R.id.version_card_view);
+            mContainerView.addContainerView(new VersionCardClickView(requireContext()));
 
-            mScrollView = mRootView.findViewById(R.id.scrollview);
-            mSpringBackView = mRootView.findViewById(R.id.springview);
+            mVersionCardView = new VersionCard(requireContext());
+            mContainerView.addContentView(mVersionCardView);
 
-            registerCoordinateScrollView(scrollLayout);
+            mScrollView = mContainerView.getNestedScrollView();
+            mSpringBackView = mContainerView.getSpringBackLayout();
+
+            registerCoordinateScrollView(mContainerView.getContentView());
             mScrollView.setOnScrollChangeListener(this);
             mSpringBackView.setOnScrollChangeListener(this);
             setShaderBackground();
         }
-        return mRootView;
+        return mContainerView;
     }
 
     private void initCardView() {
@@ -134,31 +134,6 @@ public class AboutPageFragment extends DashboardFragment
     public void onResume() {
         super.onResume();
         initCardView();
-        ActionBar appCompatActionBar = getAppCompatActionBar();
-        /*if (appCompatActionBar != null) {
-            appCompatActionBar.getExpandTitle().setTitle("");
-            appCompatActionBar.setExpandState(0);
-            appCompatActionBar.setResizable(false);
-            appCompatActionBar.getActionBarView().requestFocus();
-            if (isFirst && mVersionCardView != null) {
-                isFirst = false;
-                mVersionCardView.mAnimationController.setActionBarAlpha(getAppCompatActionBar().getTitleView(0));
-            }
-        }
-        adjustBackgroundForOverlay();*/
-    }
-
-    public void updateFragmentView(View view) {
-        ViewGroup actionBarOverlayLayout = ActionBarUtils.getActionBarOverlayLayout(view);
-        if (actionBarOverlayLayout != null) {
-            actionBarOverlayLayout.setBackgroundResource(android.R.color.transparent);
-        }
-    }
-
-    private void adjustBackgroundForOverlay() {
-        if (getActivity() != null) {
-            getActivity().findViewById(fan.appcompat.R.id.action_bar_overlay_layout);
-        }
     }
 
     @Override
@@ -169,9 +144,9 @@ public class AboutPageFragment extends DashboardFragment
     private void setShaderBackground() {
         setContentViewPadding();
         if (mBgEffectView == null) {
-            mBgEffectView = LayoutInflater.from(getContext()).inflate(R.layout.layout_effect_bg, (ViewGroup) contentView, false);
-            contentView.addView(mBgEffectView, 0);
-            mBgEffectView = contentView.findViewById(R.id.bgEffectView);
+            mBgEffectView = LayoutInflater.from(getContext()).inflate(R.layout.layout_effect_bg, mContainerView, false);
+            mContainerView.addView(mBgEffectView, 0);
+            mBgEffectView = mContainerView.findViewById(R.id.bgEffectView);
         }
         mBgEffectView.post(() -> {
             if (getContext() != null) {
@@ -185,9 +160,9 @@ public class AboutPageFragment extends DashboardFragment
     }
 
     private void setContentViewPadding() {
-        if (contentView == null && getActivity() != null) {
-            contentView = mRootView.findViewById(R.id.fragment_container);
-            contentView.setOnApplyWindowInsetsListener((v, insets) -> {
+        if (mContainerView == null && getActivity() != null) {
+            //contentView = mContainerView.findViewById(R.id.fragment_container);
+            mContainerView.setOnApplyWindowInsetsListener((v, insets) -> {
                 v.setPadding(0, 0, 0, 0);
                 return insets;
             });
@@ -208,10 +183,10 @@ public class AboutPageFragment extends DashboardFragment
             if (v.getId() == R.id.scrollview) {
                 scrollValue = scrollY;
                 mVersionCardView.setScrollValue(scrollY);
-                mVersionCardView.setAnimation(scrollY, mBgEffectView);
+                mVersionCardView.setAnimation(scrollY, mBgEffectView, getAppCompatActionBar().getTitleView(0));
             } else {
-                if (v.getId() == R.id.springview && scrollY >= 0) {
-                    mVersionCardView.setAnimation(scrollY + scrollValue, mBgEffectView);
+                if (v.getId() == com.sevtinge.hyperceiler.R.id.scrollable_view_group && scrollY >= 0) {
+                    mVersionCardView.setAnimation(scrollY + scrollValue, mBgEffectView, getAppCompatActionBar().getTitleView(0));
                 }
             }
         }
@@ -267,8 +242,8 @@ public class AboutPageFragment extends DashboardFragment
     public void onDestroyView() {
         super.onDestroyView();
         if (mHandler != null) mHandler.removeCallbacks(runnableBgEffect);
-        if (mRootView != null) unregisterCoordinateScrollView(mRootView);
-        mRootView = null;
+        if (mContainerView != null) unregisterCoordinateScrollView(mContainerView.getNestedHeader());
+        mContainerView = null;
     }
 
     @Override
@@ -277,12 +252,35 @@ public class AboutPageFragment extends DashboardFragment
     }
 
     @Override
-    public void onEnter() {
-
+    public void onEnter(ActionBar actionBar) {
+        if (actionBar != null) {
+            actionBar.getExpandTitle().setTitle("");
+            actionBar.getActionBarView().requestFocus();
+            resetActionBar(actionBar, false);
+        }
     }
 
     @Override
-    public void onLeave() {
+    public void onLeave(ActionBar actionBar) {
+        resetActionBar(actionBar, true);
+    }
 
+    public void resetActionBar(ActionBar actionBar, boolean resizable) {
+        if (actionBar != null) {
+            if (resizable) {
+                actionBar.setResizable(true);
+                actionBar.getTitleView(0).setAlpha(1.0f);
+                //setActionBarBlur(actionBar, true);
+            } else {
+                actionBar.setExpandState(0);
+                actionBar.setResizable(false);
+                mVersionCardView.setAnimation(mScrollView.getScrollY(), mBgEffectView, getAppCompatActionBar().getTitleView(0));
+                setActionBarBlur(actionBar, false);
+            }
+        }
+    }
+
+    private void setActionBarBlur(ActionBar actionBar, boolean blur) {
+        ((ActionBarImpl) actionBar).getActionBarContainer().setActionBarBlur(blur);
     }
 }

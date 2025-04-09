@@ -3,8 +3,8 @@ package com.sevtinge.hyperceiler.utils.banner;
 import static com.sevtinge.hyperceiler.hook.utils.devicesdk.SystemSDKKt.getBaseOs;
 import static com.sevtinge.hyperceiler.hook.utils.devicesdk.SystemSDKKt.getRomAuthor;
 import static com.sevtinge.hyperceiler.hook.utils.devicesdk.SystemSDKKt.isFullSupport;
-import static com.sevtinge.hyperceiler.hook.utils.log.LogManager.IS_LOGGER_ALIVE;
 import static com.sevtinge.hyperceiler.common.prefs.PreferenceHeader.notInSelectedScope;
+import static com.sevtinge.hyperceiler.hook.utils.log.LogManager.IS_LOGGER_ALIVE;
 
 import android.content.Context;
 import android.widget.TextView;

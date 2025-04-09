@@ -31,6 +31,7 @@ import com.sevtinge.hyperceiler.ui.ContentFragment.IFragmentChange;
 import com.sevtinge.hyperceiler.common.utils.MainActivityContextHelper;
 import com.sevtinge.hyperceiler.hook.utils.log.AndroidLogUtils;
 import com.sevtinge.hyperceiler.utils.banner.HomePageBannerHelper;
+import com.sevtinge.hyperceiler.widget.ListContainerView;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -38,6 +39,7 @@ import org.xmlpull.v1.XmlPullParserException;
 import java.io.IOException;
 import java.util.function.BiConsumer;
 
+import fan.appcompat.app.ActionBar;
 import fan.appcompat.app.Fragment;
 import fan.navigator.NavigatorFragmentListener;
 import fan.nestedheader.widget.NestedHeaderLayout;
@@ -47,7 +49,7 @@ public class HomePageFragment extends DashboardFragment
         implements HomepageEntrance.EntranceState, ModSearchCallback.OnSearchListener,
         NavigatorFragmentListener, IFragmentChange {
 
-    View mRootView;
+    ListContainerView mContainerView;
     ViewGroup mPrefsContainer;
     NestedHeaderLayout mNestedHeaderLayout;
 
@@ -60,11 +62,11 @@ public class HomePageFragment extends DashboardFragment
     @NonNull
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        mRootView = inflater.inflate(R.layout.fragment_home_page, container, false);
-        mPrefsContainer = mRootView.findViewById(R.id.prefs_container);
-        View view = super.onCreateView(inflater, container, savedInstanceState);
+        mContainerView = new ListContainerView(requireContext());
+        mNestedHeaderLayout = mContainerView.getNestedHeader();
+        mContainerView.addPrefsContainer(super.onCreateView(inflater, container, savedInstanceState));
         setOverlayMode();
-        mPrefsContainer.addView(view);
+        registerCoordinateScrollView(mNestedHeaderLayout);
 
         RecyclerView listView = getListView();
         View parent = (View) listView.getParent();
@@ -72,22 +74,21 @@ public class HomePageFragment extends DashboardFragment
             parent.setEnabled(false);
             listView.setPaddingRelative(listView.getPaddingStart(), 0, listView.getPaddingEnd(), 0);
         }
-
-        mNestedHeaderLayout = mRootView.findViewById(R.id.nested_header);
-        registerCoordinateScrollView(mNestedHeaderLayout);
-        return mRootView;
+        return mContainerView;
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        initSearchView(view);
+        initSearchView();
     }
 
-    private void initSearchView(View view) {
-        mSearchBar = view.findViewById(R.id.search_bar);
-        mSearchInputView = view.findViewById(android.R.id.input);
-        mSearchResultView = view.findViewById(R.id.search_result_view);
+    private void initSearchView() {
+        mContainerView.showHeaderView();
+        mContainerView.setRefreshEnable(true);
+        mSearchBar = mContainerView.getHeaderView();
+        mSearchInputView = mSearchBar.findViewById(android.R.id.input);
+        mSearchResultView = mContainerView.getRecyclerView();
 
         mSearchAdapter = new ModSearchAdapter();
         mSearchInputView.setHint(getResources().getString(R.string.search));
@@ -119,14 +120,17 @@ public class HomePageFragment extends DashboardFragment
         //mInSearchMode = true;
         if (isAdded()) {
             mNestedHeaderLayout.setInSearchMode(true);
-            mPrefsContainer.setVisibility(View.GONE);
-            mSearchResultView.setVisibility(View.VISIBLE);
+            mContainerView.setRefreshEnable(false);
+            mContainerView.showRecyclerView();
         }
     }
 
     @Override
     public void onDestroySearchMode(ActionMode mode) {
         //mInSearchMode = false;
+        mNestedHeaderLayout.setInSearchMode(false);
+        mContainerView.setRefreshEnable(true);
+        mContainerView.showPrefsContainer();
     }
 
     @Override
@@ -136,15 +140,7 @@ public class HomePageFragment extends DashboardFragment
 
     @Override
     public void onSearchModeAnimStop(boolean z) {
-        if (isAdded()) {
-            if (z) {
-                //homeViewModel.setVpScrollable(false);
-            } else {
-                mNestedHeaderLayout.setInSearchMode(false);
-                mPrefsContainer.setVisibility(View.VISIBLE);
-                mSearchResultView.setVisibility(View.GONE);
-            }
-        }
+
     }
 
     @Override
@@ -268,12 +264,12 @@ public class HomePageFragment extends DashboardFragment
     }
 
     @Override
-    public void onEnter() {
+    public void onEnter(ActionBar actionBar) {
 
     }
 
     @Override
-    public void onLeave() {
+    public void onLeave(ActionBar actionBar) {
 
     }
 }
